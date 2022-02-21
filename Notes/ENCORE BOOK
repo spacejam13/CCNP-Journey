@@ -1,0 +1,377 @@
+Chapter 1 Packet Forwarding
+
+ 
+
+If you notice a switch port with multiple MAC addresses, that means this port could be connected to another switch, hub, or virtual switch or Voip device. 
+
+ 
+
+It is possible to have multiple IPs attached to an interface. You will need  to use the secondary command for IPv4, but not IPv6.   Ex. Ip add 172.16.0.1 255.255.0.0 secondary. 
+
+ 
+
+Cisco express forwarding contains FIB and adjacency table and is much faster than process forwarding. 
+
+ 
+
+FIB uses RIB for programming. 
+
+ 
+
+The RIB is basically the routing table 
+
+ 
+
+Every switch in a switch stack must be configured with the same SDM features. 
+
+ 
+
+Chapter 2 spanning Tree 
+
+ 
+
+802.1d (original spanning tree) 
+
+802.1w (RSTP) 
+
+802.1s (MST) 
+
+  
+
+802.1d port states (30sec process) 
+
+Disabled - port is shutdown 
+
+Blocking - does not forward traffic. Only receives BPDUs. 
+
+Listening - sends or receives BPDUs, but cannot forward any other network traffic 
+
+Learning - same as listening but can now modify the MAC table 
+
+Forwarding - forwards all traffic and updates table 
+
+Broken - configuration issue, packets are discarded. 
+
+ 
+
+802.1d port types 
+
+Root port - connects to root bridge. 1 per vlan 
+
+Designated port - receives and forwards BPDUs. 1 DP per link 
+
+Blocking port - not forwarding 
+
+ 
+
+STP terminology 
+
+BPDU types - configuration and topology 
+
+System priority - default value 32,768 
+
+Max age - default time 20secs 
+
+Hello time- default time is 2 secs 
+
+Forward delay - default time is 15 secs 
+
+ 
+
+RSTP 802.1w port states 
+
+Discarding - combo of disabled, blocking, and listening. Is not forwarding any traffic 
+
+Learning - modifies mac table and only forwards BPDUs 
+
+Forwarding- forwards all traffic 
+
+ 
+
+802.1w port roles 
+
+Alternate- provided alternate connectivity to the root switch. 
+
+Backup- link redundancy 
+
+  
+
+802.1w Port Types 
+
+ Edge - port fast enabled ports. Cannot form a loop 
+
+Root- best path to the root bridge 
+
+Point to point - full duplex connect between another switch via RSTP. 
+
+⁰ 
+
+Chapter 3  Advance STP tuning 
+
+Spanning-tree vlan primary command sets the root bridge priority to 24,576 and the secondary to 28,672. 
+
+You configure the spanning tree cost on the port interface.  
+
+Int g0/0, spanning-tree vlan 1 cost 
+
+Spanning tree port-fast trunk should only be used on interfaces connected to hosts such as a server. If connected to another switch could cause a loop. 
+
+To recovery a switch from a BPDU err-disable use command err disable recovery cause bpduguard in global configuration. 
+
+Do not enable loop guard on port fast enable ports . 
+
+Chapter 4 Multiple Spanning Tree Protocol 
+
+MST is one or multiple vlans mapped to a single spanning tree instance. 
+
+Internal spanning tree - 1st instance and is always 0. 
+
+MSTI's support are 16. 
+
+MST region boundary any port that connects to a switch in a different region. 
+
+Chapter 5 Vlan Trunks and Ether Channel Bundles 
+
+In VTP domain version 3, the primary server is set with the command VTP primary. 
+
+There are 3 VTP advertisement updates: 
+
+Summary- occurs every 300s or when a new vlan is added. Contains the vtp version, domain, config revision #, and time stamp 
+
+Subnet- occurs when a vlan is changed 
+
+Client Request- requested by the client when a low priority switch joins the vtp domain. 
+
+It is important to reset the revision number on a switch to 0 before adding it to vtp domain to avoid possibly having vlans deleted.  
+
+There are 3 modes for setting a switchport Trunk 
+
+Trunk 
+
+Dynamic desirable (acts as an access port, but listens for DTP  packets)   
+
+Dynamic Auto (same concept as dynamic desirable, but cannot negotiate with another auto port) 
+
+Switchport non-negotiate prevents a port from becoming a trunk. 
+
+PagP - Port Aggression Protocol, 2 modes auto and desirable 
+
+LACP- Link Aggression Protocol, 2 modes passive and active 
+
+LACP additional configuration: port channel min, port channel max, system priority, interface priority. 
+
+When troubleshooting port channel, all interfaces should have the same characteristics for 
+
+Port type- Layer 2 or 3 
+
+Port mode- either access or trunk 
+
+Native and Allow Vlans -  
+
+Speed and Duplex 
+
+MTU 
+
+Load interval 
+
+Storm control 
+
+Chapter 6 IP routing essentials 
+
+Distance Vector = Ripv2 (hop count) 
+
+Enhance/Hybrid = EIGRP ( Delay and Bandwidth) 
+
+Link State = OSPF and IS-IS (interface cost) 
+
+Path Vector = BGP (path attributes) 
+
+Path Selection: Prefix length, Administrative distance, Metric 
+
+VRF= virtual routers on a physical router 
+
+Chapter 7 EIGRP 
+
+5 Packet types - Hello, Request, Update, Query, Reply 
+
+In EIGPR's wide metric, an additional K value (k6) is added. 
+
+ 
+
+Chapter 8 OSPF  
+
+5 Packet Types - Hello, BDB, LSR, LSU, LSA 
+
+OSPF Neighbor States- Down, Attempt, Init, 2-way, Exstart, Exchange, Loading, Full 
+
+OSPF adjacencies n(n-1)/2  
+
+ 
+
+Chapter 9 Advance OSPF 
+
+Area 0 is the backbone that everything must connect to prevent routing loops. 
+
+An interface can belong to only one area. 
+
+ABR's advertise routes from one area to another.  
+
+Type 1 LSA's are not advertised outside of the area. 
+
+DR's will always advertise Type 2 LSA's. 
+
+Maximum ECMP paths is 4. 
+
+Distribute list are used to allow routes to exist in the LSDB, but not the RIB 
+
+Sh ip ospf to identify changes in auto reference bandwidth 
+
+Sh ip protocols to verify the type of router is OSPF such as ABR,ASBR,etc 
+
+Chapter 11 BGP 
+
+Path Attribute: Well-known mandatory, well-know discretionary, optional transitive, optional non-transitive 
+
+AS_Path attribute is used for loop prevention. 
+
+Each address family has a separate database.  
+
+BGP message types: Open, Update, Notification, Keepalive 
+
+BGP states: Idle, Connect, Active, OpenSent, OpenConfirm, Established 
+
+BGP tables: Adj-RIB-In; Loc-RIB, and Adj-RIB-Out 
+
+Adj-RIB-out table shows routes advertised to a specific router (advertised-routes) 
+
+BGP static summarization: Static and Dynamic  
+
+MP-BPG allows BPG to carry NLRI's for multiple protocols.  
+
+No bgp default ipv4 unicast requires bgp neighbors to be activated with address family configuration. 
+
+Chapter 12 Advance BGP 
+
+For ACL's in BGP, the source field matches the network portion and the destination matches the network mask. 
+
+High order bit patter, high order bit count.  
+
+Higher-order bit count <ge-value <=le-value 
+
+Clearing bgp sessions: hard and soft reset. Hard - clear ip bgp; for soft same command just add soft at the end. 
+
+BGP community 2 types: private and extended.  
+
+Bgp well known communities: 4,294,901,760 and 4,294,967,295. Internet, no_advertise, no_export 
+
+Bgp standard community lists (1-99) and match to well known communities or private communities.  
+
+Expanded community lists are 100 to 500 and use regex patterns 
+
+ 
+
+<<wallace encore.pdf>>
+Chapter 13 Multicast 
+
+PIM is for layer 3 traffic and IGMP is for layer 2 traffic. 
+
+Multicast IP range 224.0.0.0-239.255.255.255 
+
+<<20201121_123102.jpg.jpg>>
+ 
+
+<<20201121_123319.jpg.jpg>>
+IGMP snooping - table of IGMP join requests 
+
+Source tree - multicast distribution tree where the source is the root and the branches form a distribution tree through the network. (SPT) (S,G) = source, group 
+
+Shared tree - router as the rendezvous point (RP). (*, G) = star, group 
+
+Reverse Path Forwarding is used to prevent loops and ensure multicast traffic arrives at the correct path. 
+
+RP's are mandatory for PIM-SM 
+
+Chapter 14 QOS 
+
+Layer 7  classification NBAR2 (Next Generation Network-Based Application Recognition). 2 types: Protocol Discovery, Modular QOS 
+
+Classification distinguishes between traffic streams. 
+
+Marking colors packet so that it is distinguished by other QOS mechanisms. 
+
+<<20201125_153542.jpg.jpg>>
+ 
+
+The four AF classes: AF1 - AF4. x = IP Precence and y = Drop Probability 
+
+DSCP/AF conversion is 8x+2y 
+
+Chapter 15 IP services 
+
+Hierarchical VRRP = fhrp version vrrp v3 
+
+GLBP load balancing  types: Round Robin, Weighted, Host-dependent 
+
+Chapter 16 Overlays 
+
+Authentication header provides integrity, authentication, and protection but not encryption 
+
+ESP provides confidentiality, authentication, and protection has encryption 
+
+IKE performs authentication between two end and establishes SA's or IKE tunnels 
+
+Cryto maps are not good for tunnels 
+
+When choosing DH group choose higher than 14 
+
+Chapter 17 Wireless Signals and Modulation 
+
+2.4GHZ is less effective by free space 
+
+Chapter 19 Wirelesss 
+
+Roaming entirely within a controller is called intracontroller roaming 
+
+Chapter 20 Wireless 
+
+WPA uses pre-shared keys and 802.1x 
+
+2 types of WebAuth LWA local (WLC) and LWA external (Radius or LDAP server) 
+
+Chapter 23 
+
+If using CLI or and API this is considered a Cisco Campus fabric solution. When campus fabric is managed by Cisco DNA center this is SD-Access. 
+
+4 layers: physical, network, controller, management 
+
+Physical: switches, routers, wlcs, cisco DNA center, ISE 
+
+In the underlay network it is recommended to use Layer 3 routing protocol IS-IS. 
+
+2 types of underlays: Manual (uses CLI or API), Automated(Cisco DNA center) 
+
+Overlay network ( SD-Access Fabric) has 3 planes: Control (LISP), Data(VXLAN), Policy (Cisco TrustSec) 
+
+3 main controller subsystems: network control platform, network data platform, ISE 
+
+Management Layer: design, policy, provision, assurance  
+
+SD-WAN - vManage, vSmart, vOrchestrator, analytics 
+
+2 Routers for SD-WAN: vEdge and cEdge 
+
+vOchestrator is the only with public IP address. Contains the control plane connection, NAT traversal, and Load Balancing 
+
+Chapter 29 
+
+Puppet - Agent-Based, manifests and modules,  
+
+Chef - Agent-Based, cookbooks and recipes, based on Ruby 
+
+Saltstack - Agent-Based, pillars and grains, based on Python, YAML 
+
+Ansible - Agentless, playbooks, YAML,  
+
+Puppet Bolt - Agentless,  
+
+SaltSSH- Agentless 
